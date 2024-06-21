@@ -1,0 +1,172 @@
+using System.Text; 
+using System.Threading.Tasks;
+using DVI_Access_Lib;
+
+using System;
+using System.Timers;
+using System.Threading;
+
+namespace DVI_Demo;
+internal class Program 
+{
+    static void Main(string[] args) 
+    {
+        DVI_Climate climate = new DVI_Climate("http://docker.data.techcollege.dk:5051"); 
+        DVI_Stock stock = new DVI_Stock("http://docker.data.techcollege.dk:5051");
+
+        ConsoleColor originalForegroundColor = Console.ForegroundColor; 
+
+        Console.WriteLine("Start programmet med enter");
+        Console.ReadKey(); 
+
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine("********** Lager data **********");
+       
+            Console.ForegroundColor = originalForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.SetCursorPosition(0, 2);
+            Console.WriteLine("Vine vi skal have bestilt flere af :");
+
+        Console.SetCursorPosition(0, 3);
+        Console.ForegroundColor = originalForegroundColor;
+       
+        foreach (Wine wine in stock.StockOverThreshold())
+        {
+            Console.WriteLine(wine.WineName);
+        }
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.SetCursorPosition(0, 14);
+        Console.WriteLine("Vine vi har for mange af :");
+        Console.ForegroundColor = originalForegroundColor;
+
+        Console.SetCursorPosition(0, 15);
+        foreach (Wine wine in stock.StockUnderThreshold())
+        {
+            Console.WriteLine(wine.WineName);
+        }
+        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+
+        Console.SetCursorPosition(115, 0);
+        Console.WriteLine("  Temperatur og luftfugtighed:");
+
+        Console.SetCursorPosition(115, 2);
+        Console.WriteLine("Lager:");
+        Console.ForegroundColor = originalForegroundColor;
+
+        Console.SetCursorPosition(115, 3);
+        Console.WriteLine("Temperatur: " + climate.CurrTemp() + "°C");
+
+        Console.SetCursorPosition(115, 4);
+        Console.WriteLine("Luftfugtighed: " + climate.CurrHum() + "%");
+
+        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+        Console.SetCursorPosition(115, 6);
+        Console.WriteLine("Udenfor:");
+        Console.ForegroundColor = originalForegroundColor;
+
+        Random arbitrary = new Random(); 
+        int arbitraryTemperatur = arbitrary.Next(8, 16);
+        int arbitraryLuftfugtighed = arbitrary.Next(40, 90);
+        Console.SetCursorPosition(115, 7);
+        Console.WriteLine("Temperatur: " + arbitraryTemperatur + "°C");
+        Console.SetCursorPosition(115, 8);
+        Console.WriteLine("Luftfugtighed: " + arbitraryLuftfugtighed + "%");
+
+        DateTime startTime300 = DateTime.Now;
+        while (true)
+        {
+            Console.CursorVisible = false;
+            ur();
+
+            DateTime currentTime = DateTime.Now;
+            TimeSpan elapsed300 = currentTime - startTime300;
+            if (elapsed300.TotalSeconds > 300)
+            {
+                Console.SetCursorPosition(0, 3);
+                Console.ForegroundColor = originalForegroundColor;
+                foreach (Wine wine in stock.StockOverThreshold())
+                {
+                    Console.WriteLine(wine.WineName);
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.SetCursorPosition(0, 13);
+                Console.WriteLine("Vine vi har for mange af :");
+                Console.ForegroundColor = originalForegroundColor;
+
+                Console.SetCursorPosition(0, 14);
+                foreach (Wine wine in stock.StockUnderThreshold())
+                {
+                    Console.WriteLine(wine.WineName);
+                }
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+
+                Console.SetCursorPosition(115, 0);
+                Console.WriteLine("  Temperatur og luftfugtighed:");
+
+                Console.SetCursorPosition(115, 2);
+                Console.WriteLine("Lager:");
+                Console.ForegroundColor = originalForegroundColor;
+
+                Console.SetCursorPosition(115, 3);
+                Console.WriteLine("Temperatur: " + climate.CurrTemp() + "°C");
+
+                Console.SetCursorPosition(115, 4);
+                Console.WriteLine("Luftfugtighed: " + climate.CurrHum() + "%");
+
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.SetCursorPosition(115, 6);
+                Console.WriteLine("Udenfor:");
+                Console.ForegroundColor = originalForegroundColor;
+
+                Random random = new Random();
+                int randomTemperatur = random.Next(8, 16);
+                int randomLuftfugtighed = random.Next(40, 90);
+                Console.SetCursorPosition(115, 7);
+                Console.WriteLine("Temperatur: " + randomTemperatur + "°C");
+                Console.SetCursorPosition(115, 8);
+                Console.WriteLine("Luftfugtighed: " + randomLuftfugtighed + "%");
+
+                startTime300 = DateTime.Now;
+            }
+
+
+        }
+
+        static void ur()
+        {
+            ConsoleColor originalForegroundColor = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.SetCursorPosition(115, 10);
+            Console.WriteLine("           Dato/Tid:");
+            Console.ForegroundColor = originalForegroundColor;
+
+            DateTime utcTime = DateTime.UtcNow;
+            TimeZoneInfo cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+            DateTime cetTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, cetTimeZone);
+            Console.SetCursorPosition(115, 11);
+            Console.WriteLine("København: " + cetTime);
+
+            TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            DateTime istTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, istTimeZone);
+            Console.SetCursorPosition(115, 12);
+            Console.WriteLine("New Delhi: " + istTime);
+
+            TimeZoneInfo estTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            DateTime estTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, estTimeZone);
+            Console.SetCursorPosition(115, 13);
+            Console.WriteLine("Ottawa:    " + estTime);
+
+            TimeZoneInfo brtTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            DateTime brtTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, brtTimeZone);
+            Console.SetCursorPosition(115, 14);
+            Console.WriteLine("Brasilia:  " + brtTime);
+
+            
+        }
+    }
+
+}
